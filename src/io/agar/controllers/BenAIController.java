@@ -26,8 +26,8 @@ public class BenAIController extends Controller implements MouseMotionListener, 
         super(agar);
         this.canvas = canvas;
         this.bots = new ArrayList<Agar>();
-        this.proxies = new Proxy[4];
-        for (int i = 0; i < 4; i++) {
+        this.proxies = new Proxy[3];
+        for (int i = 0; i < 3; i++) {
             proxies[i] = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("localhost", 8080 + i));
         }
 
@@ -39,6 +39,9 @@ public class BenAIController extends Controller implements MouseMotionListener, 
     @Override
     public void tick() {
         for (Agar agar : bots) {
+            if (agar == null) {
+                continue;
+            }
             MoveToTargetController bot = (MoveToTargetController) agar.controller;
             bot.targetX = this.agar.xoffset;
             bot.targetY = this.agar.yoffset;
@@ -84,7 +87,7 @@ public class BenAIController extends Controller implements MouseMotionListener, 
             double ndx = ddx / ddd;
             double ndy = ddy / ddd;
             if (!bl.virus) {
-                if (bl.mass >= avgMass * 1.25) {
+                if (bl.mass >= avgMass * 1.1) {
                     double mx = (ddx - ndx * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 10000;
                     dx += mx;
                     double my = (ddy - ndy * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 10000;
@@ -92,7 +95,7 @@ public class BenAIController extends Controller implements MouseMotionListener, 
                     if (predators) {
                         agar.vect.add(new double[]{mx, my});
                     }
-                } else if (avgMass >= bl.mass * 1.25) {
+                } else if (avgMass >= bl.mass * 1.15) {
                     double mx = (ddx) / ddd / ddd * avgMass * 50;
                     dx -= mx;
                     double my = (ddy) / ddd / ddd * avgMass * 50;
