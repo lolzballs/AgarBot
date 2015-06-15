@@ -49,6 +49,7 @@ public class BenAIController extends Controller implements MouseMotionListener, 
         if (ai) {
             ai();
         } else {
+            agar.vect.clear();
             agar.movementX = movementX;
             agar.movementY = movementY;
         }
