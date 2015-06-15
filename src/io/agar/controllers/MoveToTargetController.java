@@ -52,12 +52,15 @@ public class MoveToTargetController extends Controller {
             double ndx = ddx / ddd;
             double ndy = ddy / ddd;
             if (!bl.virus) {
-                if (bl.mass >= avgMass * 1.25) {
+                if (bl.mass >= avgMass * 1.1) {
+                    if (follow.contains(bl.id)) {
+                        continue;
+                    }
                     double mx = (ddx - ndx * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 10000;
                     dx += mx;
                     double my = (ddy - ndy * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 10000;
                     dy += my;
-                } else if (avgMass >= bl.mass * 1.25) {
+                } else if (avgMass >= bl.mass * 1.15) {
                     double mx = (ddx) / ddd / ddd * 10;
                     dx -= mx;
                     double my = (ddy) / ddd / ddd * 10;
