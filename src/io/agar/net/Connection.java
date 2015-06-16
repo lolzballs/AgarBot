@@ -1,7 +1,6 @@
 package io.agar.net;
 
 import io.agar.Agar;
-import sun.net.SocksProxy;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -10,22 +9,30 @@ import java.net.Socket;
 import java.util.Random;
 
 public class Connection {
-    public final Random random = new Random();
-    public final Socket socket;
-    public final DataInputStream input;
-    public final DataOutputStream output;
-
     public final Agar agar;
+    public final String ip;
+    public final int port;
+    public final Random random;
+
     public final ReadThread readThread;
     public final WriteThread writeThread;
 
+    private final Socket socket;
+    private final DataInputStream input;
+    private final DataOutputStream output;
+
     public Connection(Agar agar, String ip, int port) throws IOException {
         this.agar = agar;
-        socket = new Socket(ip, port);
-        input = new DataInputStream(socket.getInputStream());
-        output = new DataOutputStream(socket.getOutputStream());
-        readThread = new ReadThread(agar, this, input);
-        writeThread = new WriteThread(agar, this, output);
+        this.ip = ip;
+        this.port = port;
+
+        this.random = new Random();
+        this.socket = new Socket(ip, port);
+        this.input = new DataInputStream(socket.getInputStream());
+        this.output = new DataOutputStream(socket.getOutputStream());
+        this.readThread = new ReadThread(agar, this, input);
+        this.writeThread = new WriteThread(agar, this, output);
+
         output.write(("GET ws://" + ip + ":" + port + "/ HTTP/1.1\r\n" +
                 "Host: " + ip + ":" + port + "\r\n" +
                 "Connection: Upgrade\r\n" +
@@ -40,11 +47,13 @@ public class Connection {
                 "Sec-WebSocket-Key: 7rSl9kibWk3oIQg2GZglVA==\r\n" +
                 "Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\n\r\n"
         ).getBytes());
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         String str;
         while ((str = reader.readLine()).length() != 0) {
             System.out.println(str);
         }
+
         writeThread.sendBinary(new byte[]{-2, 4, 0, 0, 0});
         writeThread.sendBinary(new byte[]{-1, 0x29, 0x28, 0x28, 0x28});
         readThread.start();
@@ -53,12 +62,18 @@ public class Connection {
 
     public Connection(Agar agar, String ip, int port, Proxy proxy) throws IOException {
         this.agar = agar;
-        socket = new Socket(proxy);
+        this.ip = ip;
+        this.port = port;
+
+        this.random = new Random();
+        this.socket = new Socket(proxy);
+        this.input = new DataInputStream(socket.getInputStream());
+        this.output = new DataOutputStream(socket.getOutputStream());
+        this.readThread = new ReadThread(agar, this, input);
+        this.writeThread = new WriteThread(agar, this, output);
+
         socket.connect(new InetSocketAddress(ip, port));
-        input = new DataInputStream(socket.getInputStream());
-        output = new DataOutputStream(socket.getOutputStream());
-        readThread = new ReadThread(agar, this, input);
-        writeThread = new WriteThread(agar, this, output);
+
         output.write(("GET ws://" + ip + ":" + port + "/ HTTP/1.1\r\n" +
                 "Host: " + ip + ":" + port + "\r\n" +
                 "Connection: Upgrade\r\n" +
@@ -73,11 +88,13 @@ public class Connection {
                 "Sec-WebSocket-Key: 7rSl9kibWk3oIQg2GZglVA==\r\n" +
                 "Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\n\r\n"
         ).getBytes());
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         String str;
         while ((str = reader.readLine()).length() != 0) {
             System.out.println(str);
         }
+
         writeThread.sendBinary(new byte[]{-2, 4, 0, 0, 0});
         writeThread.sendBinary(new byte[]{-1, 0x29, 0x28, 0x28, 0x28});
         readThread.start();
