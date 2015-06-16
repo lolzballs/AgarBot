@@ -42,7 +42,7 @@ public class WriteThread extends Thread {
                 for (; agar.restart; agar.restart = false) {
 //                    String s = JOptionPane.showInputDialog("Nickname: ");
                     System.out.println("dead!");
-                    String s = "testBot";
+                    String s = agar.username;
                     if (s == null) {
                         System.exit(0);
                     }

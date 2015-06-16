@@ -51,7 +51,7 @@ public class MoveToTargetController extends Controller {
             double ddd = Math.sqrt(ddx * ddx + ddy * ddy);
             double ndx = ddx / ddd;
             double ndy = ddy / ddd;
-            if (!bl.virus) {
+            if (!bl.virus || agar.follow.size() >= 16) {
                 if (bl.mass >= avgMass * 1.1) {
                     if (follow.contains(bl.id)) {
                         continue;

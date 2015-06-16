@@ -20,6 +20,7 @@ public class Agar {
     public final ArrayList<IdName> leaderboard = new ArrayList<IdName>();
     public final ArrayList<double[]> vect = new ArrayList<double[]>();
     public final Connection connection;
+    public final String username;
 
     public double xmin;
     public double ymin;
@@ -35,12 +36,14 @@ public class Agar {
     public double movementX = 0;
     public double movementY = 0;
 
-    public Agar(String ip, int port) throws IOException {
+    public Agar(String ip, int port, String username) throws IOException {
         this.connection = new Connection(this, ip, port);
+        this.username = username;
     }
 
-    public Agar(String ip, int port, Proxy proxy) throws IOException {
+    public Agar(String ip, int port, Proxy proxy, String username) throws IOException {
         this.connection = new Connection(this, ip, port, proxy);
+        this.username = username;
     }
 
     public static void main(String[] args) throws Exception {
@@ -49,7 +52,7 @@ public class Agar {
             proxies[i] = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("localhost", 8080 + i));
         }
 
-        Agar agar = new Agar("167.114.209.35", 443);
+        Agar agar = new Agar("167.114.209.35", 1502, "lolzballs");
         AgarCanvas canvas = new AgarCanvas(agar);
 
         agar.setController(new HackController(agar, canvas, proxies));
