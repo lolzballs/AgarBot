@@ -67,12 +67,14 @@ public class Connection {
 
         this.random = new Random();
         this.socket = new Socket(proxy);
+
+        socket.connect(new InetSocketAddress(ip, port));
+
         this.input = new DataInputStream(socket.getInputStream());
         this.output = new DataOutputStream(socket.getOutputStream());
         this.readThread = new ReadThread(agar, this, input);
         this.writeThread = new WriteThread(agar, this, output);
 
-        socket.connect(new InetSocketAddress(ip, port));
 
         output.write(("GET ws://" + ip + ":" + port + "/ HTTP/1.1\r\n" +
                 "Host: " + ip + ":" + port + "\r\n" +
