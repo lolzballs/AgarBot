@@ -8,8 +8,8 @@ import java.net.Proxy;
 import java.util.ArrayList;
 
 public class HackController extends HybridController {
-    private ArrayList<Agar> bots;
-    private Proxy[] proxies;
+    private final ArrayList<Agar> bots;
+    private final Proxy[] proxies;
 
     public HackController(Agar agar, AgarCanvas canvas, Proxy[] proxies) {
         super(agar, canvas);
@@ -19,14 +19,16 @@ public class HackController extends HybridController {
 
     @Override
     public void tick() {
-        for (Agar agar : bots) {
-            if (agar == null) {
-                continue;
+        synchronized (bots) {
+            for (Agar agar : bots) {
+                if (agar == null) {
+                    continue;
+                }
+                MoveToTargetController bot = (MoveToTargetController) agar.controller;
+                bot.targetX = this.agar.xoffset;
+                bot.targetY = this.agar.yoffset;
+                this.agar.vect.add(new double[]{agar.xoffset, agar.yoffset});
             }
-            MoveToTargetController bot = (MoveToTargetController) agar.controller;
-            bot.targetX = this.agar.xoffset;
-            bot.targetY = this.agar.yoffset;
-            this.agar.vect.add(new double[]{agar.xoffset, agar.yoffset});
         }
 
         super.tick();
@@ -38,25 +40,32 @@ public class HackController extends HybridController {
         super.keyPressed(e);
 
         if (e.getKeyCode() == KeyEvent.VK_B) {
-            try {
-                int count = bots.size();
-                int amount = count / 5;
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        int count = bots.size();
+                        int amount = count / 5;
 
-                Agar agar;
+                        Agar botAgar;
 
-                if (amount >= proxies.length) {
-                    System.out.println("No more proxies, starting on localhost");
-                    agar = new Agar(this.agar.connection.ip, this.agar.connection.port);
-                } else {
-                    System.out.println("Starting on socks proxy: " + amount);
-                    agar = new Agar(this.agar.connection.ip, this.agar.connection.port, proxies[amount]);
+                        if (amount >= proxies.length) {
+                            System.out.println("No more proxies, starting on localhost");
+                            botAgar = new Agar(agar.connection.ip, agar.connection.port);
+                        } else {
+                            System.out.println("Starting on socks proxy: " + amount);
+                            botAgar = new Agar(agar.connection.ip, agar.connection.port, proxies[amount]);
+                        }
+                        MoveToTargetController bot = new MoveToTargetController(botAgar, agar.follow, agar.xoffset, agar.yoffset);
+                        botAgar.setController(bot);
+                        synchronized (bots) {
+                            bots.add(botAgar);
+                        }
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
                 }
-                MoveToTargetController bot = new MoveToTargetController(agar, this.agar.follow, this.agar.xoffset, this.agar.yoffset);
-                agar.setController(bot);
-                bots.add(agar);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
+            }.start();
         }
     }
 }
