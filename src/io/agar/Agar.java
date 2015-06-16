@@ -1,7 +1,7 @@
 package io.agar;
 
 import io.agar.controllers.Controller;
-import io.agar.controllers.HybridController;
+import io.agar.controllers.HackController;
 import io.agar.net.Connection;
 
 import javax.swing.*;
@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,10 +44,15 @@ public class Agar {
     }
 
     public static void main(String[] args) throws Exception {
-        Agar agar = new Agar("167.114.209.36", 443);
+        Proxy[] proxies = new Proxy[3];
+        for (int i = 0; i < 3; i++) {
+            proxies[i] = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("localhost", 8080 + i));
+        }
+
+        Agar agar = new Agar("167.114.209.35", 443);
         AgarCanvas canvas = new AgarCanvas(agar);
 
-        agar.setController(new HybridController(agar, canvas));
+        agar.setController(new HackController(agar, canvas, proxies));
 
         final JFrame frame = new JFrame("Agar.io");
         canvas.setPreferredSize(new Dimension(800, 600));

@@ -1,7 +1,5 @@
 package io.agar;
 
-import io.agar.controllers.BenAIController;
-import io.agar.controllers.HybridController;
 import io.agar.controllers.lIAOAIController;
 
 import javax.swing.*;

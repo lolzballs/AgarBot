@@ -6,8 +6,15 @@ import io.agar.Blob;
 import java.util.Map;
 
 public class AIController extends Controller {
+    protected boolean predators;
+    protected boolean prey;
+    protected boolean virus;
+
     public AIController(Agar agar) {
         super(agar);
+        this.predators = true;
+        this.prey = true;
+        this.virus = true;
     }
 
     @Override
@@ -29,29 +36,44 @@ public class AIController extends Controller {
         agar.vect.clear();
         for (Map.Entry<Integer, Blob> sets : agar.blobs.entrySet()) {
             Blob bl = sets.getValue();
-            if(agar.follow.contains(bl.id)){
+
+            if (agar.follow.contains(bl.id)) {
                 continue;
             }
+
             double ddx = (agar.xoffset - bl.x);
             double ddy = (agar.yoffset - bl.y);
             double ddd = Math.sqrt(ddx * ddx + ddy * ddy);
             double ndx = ddx / ddd;
             double ndy = ddy / ddd;
             if (!bl.virus) {
-                if (bl.mass >= avgMass * 1.15) {
-                    dx += (ddx - ndx * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 1000;
-                    dy += (ddy - ndy * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 1000;
-                    agar.vect.add(new double[]{(ddx - ndx * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 1000, (ddy - ndy * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 1000});
+                if (bl.mass >= avgMass * 1.1) {
+                    double mx = (ddx - ndx * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 10000;
+                    dx += mx;
+                    double my = (ddy - ndy * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 10000;
+                    dy += my;
+                    if (predators) {
+                        agar.vect.add(new double[]{mx, my});
+                    }
                 } else if (avgMass >= bl.mass * 1.15) {
-                    dx -= (ddx) / (ddd) / (ddd) * 250;
-                    dy -= (ddy) / (ddd) / (ddd) * 250;
-                    agar.vect.add(new double[]{-ddx / ddd / ddd * 250, -ddy / ddd / ddd * 250});
+                    double mx = (ddx) / ddd / ddd * avgMass * 50;
+                    dx -= mx;
+                    double my = (ddy) / ddd / ddd * avgMass * 50;
+                    dy -= my;
+                    if (prey) {
+                        agar.vect.add(new double[]{-mx, -my});
+                    }
                 }
             } else {
-                if (bl.mass >= avgMass * 1.15) {
-                    dx += (ddx - ndx * avgMass) / (ddd - avgMass) / (ddd - avgMass) * 500;
-                    dy += (ddy - ndy * avgMass) / (ddd - avgMass) / (ddd - avgMass) * 500;
-                    agar.vect.add(new double[]{(ddx - ndx * avgMass) / (ddd - avgMass) / (ddd - avgMass) * 500, (ddy - ndy * avgMass) / (ddd - avgMass) / (ddd - avgMass) * 500});
+                if (bl.mass <= avgMass) {
+                    double mx = (ddx - ndx * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 5000;
+                    double my = (ddy - ndy * bl.mass) / (ddd - bl.mass) / (ddd - bl.mass) * 5000;
+                    dx += mx;
+                    dy += my;
+
+                    if (virus) {
+                        agar.vect.add(new double[]{mx, my});
+                    }
                 }
             }
         }

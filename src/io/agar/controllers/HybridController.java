@@ -25,6 +25,7 @@ public class HybridController extends AIController implements MouseMotionListene
         if (ai) {
             super.tick();
         } else {
+            agar.vect.clear();
             agar.movementX = movementX;
             agar.movementY = movementY;
         }
@@ -52,6 +53,15 @@ public class HybridController extends AIController implements MouseMotionListene
             agar.connection.writeThread.eject();
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             agar.connection.writeThread.split();
+        } else if (e.getKeyCode() == KeyEvent.VK_A) {
+            predators = !predators;
+        } else if (e.getKeyCode() == KeyEvent.VK_S) {
+            prey = !prey;
+        } else if (e.getKeyCode() == KeyEvent.VK_D) {
+            virus = !virus;
+        } else if (e.getKeyCode() == KeyEvent.VK_Z) {
+            ai = !ai;
+            agar.vect.clear();
         }
     }
 
