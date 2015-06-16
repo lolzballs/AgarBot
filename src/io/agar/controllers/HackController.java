@@ -46,10 +46,10 @@ public class HackController extends HybridController {
 
                 if (amount >= proxies.length) {
                     System.out.println("No more proxies, starting on localhost");
-                    agar = new Agar("167.114.209.35", 443);
+                    agar = new Agar(this.agar.connection.ip, this.agar.connection.port);
                 } else {
                     System.out.println("Starting on socks proxy: " + amount);
-                    agar = new Agar("167.114.209.35", 443, proxies[amount]);
+                    agar = new Agar(this.agar.connection.ip, this.agar.connection.port, proxies[amount]);
                 }
                 MoveToTargetController bot = new MoveToTargetController(agar, this.agar.follow, this.agar.xoffset, this.agar.yoffset);
                 agar.setController(bot);
