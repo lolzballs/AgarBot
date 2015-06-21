@@ -20,6 +20,8 @@ public class AgarCanvas extends JPanel implements MouseWheelListener {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        int w2 = getWidth() / 2;
+        int h2 = getHeight() / 2;
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         synchronized (agar.blobs) {
@@ -35,8 +37,8 @@ public class AgarCanvas extends JPanel implements MouseWheelListener {
 
                 if (b.virus) {
                     Path2D.Double path = new Path2D.Double();
-                    double xc = agar.xoffset * agar.scale - getWidth() / 2;
-                    double yc = agar.yoffset * agar.scale - getHeight() / 2;
+                    double xc = agar.xoffset * agar.scale - w2;
+                    double yc = agar.yoffset * agar.scale - h2;
                     double amountToAdd = 1.025;
                     path.moveTo(b.x * agar.scale - xc, (b.y + b.mass * amountToAdd) * agar.scale - yc);
                     int slices = 72;
@@ -54,8 +56,8 @@ public class AgarCanvas extends JPanel implements MouseWheelListener {
                     g2d.draw(path);
                 } else {
                     g2d.setColor(c);
-                    int x = (int) ((b.x - b.mass - agar.xoffset) * agar.scale + getWidth() / 2);
-                    int y = (int) ((b.y - b.mass - agar.yoffset) * agar.scale + getHeight() / 2);
+                    int x = (int) ((b.x - b.mass - agar.xoffset) * agar.scale + w2);
+                    int y = (int) ((b.y - b.mass - agar.yoffset) * agar.scale + h2);
                     int diameter = (int) (b.mass * 2 * agar.scale);
                     g2d.fillOval(x, y, diameter, diameter);
 
@@ -66,8 +68,8 @@ public class AgarCanvas extends JPanel implements MouseWheelListener {
                 g2d.setColor(Color.black);
                 g2d.setFont(new Font("Ubuntu", Font.BOLD, (int) ((b.mass / 4 + 15) * agar.scale)));
                 FontMetrics fm = g2d.getFontMetrics();
-                int x = (int) ((b.x - agar.xoffset) * agar.scale + getWidth() / 2 - fm.stringWidth(b.name) / 2);
-                int y = (int) ((b.y - agar.yoffset) * agar.scale + getHeight() / 2 + (fm.getAscent() + fm.getDescent()) / 3);
+                int x = (int) ((b.x - agar.xoffset) * agar.scale + w2 - fm.stringWidth(b.name) / 2);
+                int y = (int) ((b.y - agar.yoffset) * agar.scale + h2 + (fm.getAscent() + fm.getDescent()) / 3);
 
                 g2d.drawString(b.name, x + 1, y + 1);
                 g2d.drawString(b.name, x + 1, y - 1);
@@ -77,13 +79,11 @@ public class AgarCanvas extends JPanel implements MouseWheelListener {
                 g2d.setColor(Color.white);
                 g2d.drawString(b.name, x, y);
             }
-            int mw = getWidth() / 2;
-            int mh = getHeight() / 2;
             g2d.setStroke(new BasicStroke(1));
             g2d.setColor(Color.black);
             for (int i = 0; i < agar.vect.size(); ++i) {
                 double[] vec = agar.vect.get(i);
-                g2d.drawLine(mw, mh, (int) (vec[0] * agar.scale * 50 + mw), (int) (vec[1] * agar.scale * 50 + mh));
+                g2d.drawLine(w2, h2, (int) (vec[0] * agar.scale * 50 + w2), (int) (vec[1] * agar.scale * 50 + h2));
             }
         }
         synchronized (agar.leaderboard) {
@@ -110,6 +110,16 @@ public class AgarCanvas extends JPanel implements MouseWheelListener {
                 g2d.drawString(s, getWidth() - 200 + (185 - fm.stringWidth(s)) / 2, i * 24 + 80);
             }
         }
+        g2d.setStroke(new BasicStroke(1));
+        g2d.setColor(Color.black);
+        int xmin = (int) ((agar.xmin - agar.xoffset) * agar.scale) + w2;
+        int ymin = (int) ((agar.ymin - agar.yoffset) * agar.scale) + h2;
+        int xmax = (int) ((agar.xmax - agar.xoffset) * agar.scale) + w2;
+        int ymax = (int) ((agar.ymax - agar.yoffset) * agar.scale) + h2;
+        g2d.drawLine(xmin, ymin, xmax, ymin);
+        g2d.drawLine(xmax, ymin, xmax, ymax);
+        g2d.drawLine(xmax, ymax, xmin, ymax);
+        g2d.drawLine(xmin, ymax, xmin, ymin);
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {

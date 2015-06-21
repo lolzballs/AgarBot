@@ -52,7 +52,7 @@ public class Agar {
             proxies[i] = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("localhost", 8080 + i));
         }
 
-        Agar agar = new Agar("167.114.209.35", 1502, "lolzballs");
+        Agar agar = new Agar("167.114.174.60", 1501, "testBot");
         AgarCanvas canvas = new AgarCanvas(agar);
 
         agar.setController(new HackController(agar, canvas, proxies));
@@ -64,7 +64,7 @@ public class Agar {
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        new Timer(25, new ActionListener() {
+        new Timer(40, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.repaint();
             }
